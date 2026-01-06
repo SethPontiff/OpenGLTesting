@@ -1,8 +1,11 @@
-# Visual Studio files
+# Visual Studio cache and temporary files
 .vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
-
-# Build results
+# Build results - executables and outputs
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
@@ -18,11 +21,12 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
-# Precompiled Headers
+# Precompiled Headers and intermediate files
 *.pch
 *.ipch
 *.idb
 *.pdb
+*.ilk
 
 # Compiled Object files
 *.slo
@@ -30,45 +34,27 @@ bld/
 *.o
 *.obj
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-
-
 # Executables
 *.exe
 *.out
 *.app
 
-# Visual Studio cache/options
-.vs/
-*.opensdf
-*.sdf
+# Compiled Dynamic libraries (but keep the ones in Libraries/)
+*.dll
+!Libraries/**/*.dll
+
+# Visual Studio IntelliSense database
 *.VC.db
 *.VC.VC.opendb
+*.opensdf
+*.sdf
 
-# ReSharper
-_ReSharper*/
-*.[Rr]e[Ss]harper
-*.DotSettings.user
-
-# Build folders
-[Bb]uild/
-[Oo]ut/
+# User-specific files (these can be ignored)
+*.vcxproj.user
+*.vcxproj.filters
 
 # OS generated files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
 # Backup files
@@ -76,3 +62,8 @@ Thumbs.db
 *.bak
 *.tmp
 *.temp
+
+# IMPORTANT: Keep these files
+# *.sln (solution file)
+# *.vcxproj (project file with settings)
+# Libraries/ folder with all dependencies
