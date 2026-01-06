@@ -4,8 +4,6 @@
 *.user
 *.userosscache
 *.sln.docstates
-*.vcxproj.filters
-*.vcxproj.user
 
 # Build results
 [Dd]ebug/
