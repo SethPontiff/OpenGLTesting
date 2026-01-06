@@ -1,0 +1,1 @@
+Project that was started to get reacquainted with using OpenGL. Currently, only has basic triangles being created in a pattern, with an image laid across all of them. Shader functionality has also been built and is available, but there's currently no 3D concepts done in it just yet (WIP).
