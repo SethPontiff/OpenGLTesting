@@ -1,34 +1,53 @@
 #ifndef CAMERA_CLASS_H
 #define CAMERA_CLASS_H
-#define GLM_ENABLE_EXPERIMENTAL
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtx/vector_angle.hpp>
-
-#include "shaderClass.h"
 
 class Camera
 {
 public:
-    glm::vec3 Position;
-    glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
-    glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 position;
+    glm::vec3 front;
+    glm::vec3 up;
+    glm::vec3 right;
+    glm::vec3 worldUp;
 
-    int width;
-    int height;
+    // Euler angles
+    float yaw;
+    float pitch;
 
-    float speed = 0.1f;
-    float sensitivity = 100.0f;
+    // Camera options
+    float movementSpeed;
+    float mouseSensitivity;
+    float fov;
 
-    Camera(int width, int height, glm::vec3 position);
+    Camera(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 3.0f),
+        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
+        float yaw = -90.0f,
+        float pitch = 0.0f);
 
-    void Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform);
-    void Inputs(GLFWwindow* window);
+    // Get matrices
+    glm::mat4 GetViewMatrix() const;
+    glm::mat4 GetProjectionMatrix(float aspectRatio, float nearPlane = 0.1f, float farPlane = 100.0f) const;
+
+    // Movement
+    void ProcessKeyboard(int direction, float deltaTime);
+    void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
+    void ProcessMouseScroll(float yOffset);
+
+private:
+    void UpdateCameraVectors();
+};
+
+// Movement directions
+enum CameraMovement {
+    FORWARD,
+    BACKWARD,
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
 };
 
 #endif

@@ -1,37 +1,82 @@
 #include "Camera.h"
-#define GLM_ENABLE_EXPERIMENTAL
 
-Camera::Camera(int width, int height, glm::vec3 position)
+Camera::Camera(glm::vec3 pos, glm::vec3 up, float yaw, float pitch)
+    : position(pos),
+    worldUp(up),
+    yaw(yaw),
+    pitch(pitch),
+    front(glm::vec3(0.0f, 0.0f, -1.0f)),
+    movementSpeed(2.5f),
+    mouseSensitivity(0.1f),
+    fov(45.0f)
 {
-    this->width = width;
-    this->height = height;
-    Position = position;
+    UpdateCameraVectors();
 }
 
-void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform)
+glm::mat4 Camera::GetViewMatrix() const
 {
-    glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::mat4(1.0f);
-
-    view = glm::lookAt(Position, Position + Orientation, Up);
-    projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
-
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(projection * view));
+    return glm::lookAt(position, position + front, up);
 }
 
-void Camera::Inputs(GLFWwindow* window)
+glm::mat4 Camera::GetProjectionMatrix(float aspectRatio, float nearPlane, float farPlane) const
 {
-    // Keyboard inputs
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        Position += speed * Orientation;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        Position -= speed * Orientation;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        Position -= speed * glm::normalize(glm::cross(Orientation, Up));
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        Position += speed * glm::normalize(glm::cross(Orientation, Up));
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        Position += speed * Up;
-    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-        Position -= speed * Up;
+    return glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+}
+
+void Camera::ProcessKeyboard(int direction, float deltaTime)
+{
+    float velocity = movementSpeed * deltaTime;
+
+    if (direction == FORWARD)
+        position += front * velocity;
+    if (direction == BACKWARD)
+        position -= front * velocity;
+    if (direction == LEFT)
+        position -= right * velocity;
+    if (direction == RIGHT)
+        position += right * velocity;
+    if (direction == UP)
+        position += up * velocity;
+    if (direction == DOWN)
+        position -= up * velocity;
+}
+
+void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch)
+{
+    xOffset *= mouseSensitivity;
+    yOffset *= mouseSensitivity;
+
+    yaw += xOffset;
+    pitch += yOffset;
+
+    if (constrainPitch)
+    {
+        if (pitch > 89.0f)
+            pitch = 89.0f;
+        if (pitch < -89.0f)
+            pitch = -89.0f;
+    }
+
+    UpdateCameraVectors();
+}
+
+void Camera::ProcessMouseScroll(float yOffset)
+{
+    fov -= yOffset;
+    if (fov < 1.0f)
+        fov = 1.0f;
+    if (fov > 45.0f)
+        fov = 45.0f;
+}
+
+void Camera::UpdateCameraVectors()
+{
+    glm::vec3 newFront;
+    newFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    newFront.y = sin(glm::radians(pitch));
+    newFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front = glm::normalize(newFront);
+
+    right = glm::normalize(glm::cross(front, worldUp));
+    up = glm::normalize(glm::cross(right, front));
 }
