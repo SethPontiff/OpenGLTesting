@@ -131,24 +131,24 @@ int main()
 	Material donutMaterial = Material::Gold();
 
 	Light light1(
-		glm::vec3(2.0f, 2.0f, 2.0f),   
-		glm::vec3(0.1f, 0.1f, 0.1f),   
-		glm::vec3(1.0f, 1.0f, 1.0f),  
-		glm::vec3(1.0f, 1.0f, 1.0f)     
+		glm::vec3(3.0f, 2.0f, 2.0f),     
+		glm::vec3(0.05f, 0.05f, 0.05f),  
+		glm::vec3(0.0f, 1.0f, 0.0f),     
+		glm::vec3(0.0f, 1.0f, 0.0f)      
 	);
 
 	Light light2(
-		glm::vec3(-2.0f, 1.0f, 2.0f), 
-		glm::vec3(0.0f, 0.0f, 0.0f),   
-		glm::vec3(1.0f, 0.0f, 0.0f),  
-		glm::vec3(1.0f, 0.0f, 0.0f)   
+		glm::vec3(-3.0f, 2.0f, 0.0f),    
+		glm::vec3(0.05f, 0.05f, 0.05f),  
+		glm::vec3(1.0f, 0.0f, 0.0f),    
+		glm::vec3(1.0f, 0.0f, 0.0f)     
 	);
 
 	Light light3(
-		glm::vec3(0.0f, -1.0f, 2.0f), 
-		glm::vec3(0.0f, 0.0f, 0.0f),  
-		glm::vec3(0.0f, 0.0f, 1.0f),  
-		glm::vec3(0.0f, 0.0f, 1.0f)   
+		glm::vec3(0.0f, -2.0f, 3.0f),   
+		glm::vec3(0.05f, 0.05f, 0.05f),  
+		glm::vec3(0.0f, 0.5f, 1.0f),    
+		glm::vec3(0.0f, 0.5f, 1.0f)     
 	);
 
 	float deltaTime = 0.0f;
