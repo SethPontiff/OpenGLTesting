@@ -5,6 +5,8 @@
 #include<glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
 #include<glm/gtc/type_ptr.hpp>
+#include<vector>
+#include<cmath>
 
 #include"shaderClass.h"
 #include"Texture.h"
@@ -16,60 +18,67 @@
 #include"Material.h"
 #include"Light.h"
 
-GLfloat vertices[] =
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+void generateDonut(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices,
+	float majorRadius, float minorRadius, int majorSegments, int minorSegments)
 {
-	// Front face
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f,
+	vertices.clear();
+	indices.clear();
 
-	// Back face
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+	for (int i = 0; i <= majorSegments; i++)
+	{
+		float theta = 2.0f * M_PI * i / majorSegments;
+		float cosTheta = cos(theta);
+		float sinTheta = sin(theta);
 
-	// Top face
-	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+		for (int j = 0; j <= minorSegments; j++)
+		{
+			float phi = 2.0f * M_PI * j / minorSegments;
+			float cosPhi = cos(phi);
+			float sinPhi = sin(phi);
 
-	// Bottom face
-	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+			float x = (majorRadius + minorRadius * cosPhi) * cosTheta;
+			float y = (majorRadius + minorRadius * cosPhi) * sinTheta;
+			float z = minorRadius * sinPhi;
 
-	// Right face
-	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+			vertices.push_back(x);
+			vertices.push_back(y);
+			vertices.push_back(z);
 
-	 // Left face
-	 -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-	 -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-	 -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-	 -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f
-};
+			float nx = cosPhi * cosTheta;
+			float ny = cosPhi * sinTheta;
+			float nz = sinPhi;
+			vertices.push_back(nx);
+			vertices.push_back(ny);
+			vertices.push_back(nz);
 
-GLuint indices[] =
-{
-	// Front face
-	0, 1, 2,  2, 3, 0,
-	// Back face
-	4, 5, 6,  6, 7, 4,
-	// Top face
-	8, 9, 10,  10, 11, 8,
-	// Bottom face
-	12, 13, 14,  14, 15, 12,
-	// Right face
-	16, 17, 18,  18, 19, 16,
-	// Left face
-	20, 21, 22,  22, 23, 20
-};
+			float s = (float)i / majorSegments;
+			float t = (float)j / minorSegments;
+			vertices.push_back(s);
+			vertices.push_back(t);
+		}
+	}
+
+	for (int i = 0; i < majorSegments; i++)
+	{
+		for (int j = 0; j < minorSegments; j++)
+		{
+			int first = i * (minorSegments + 1) + j;
+			int second = first + minorSegments + 1;
+
+			indices.push_back(first);
+			indices.push_back(second);
+			indices.push_back(first + 1);
+
+			indices.push_back(second);
+			indices.push_back(second + 1);
+			indices.push_back(first + 1);
+		}
+	}
+}
 
 int main()
 {
@@ -87,13 +96,16 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
-
 	glfwMakeContextCurrent(window);
 
 	gladLoadGL();
-
 	glViewport(0, 0, 800, 800);
 	glEnable(GL_DEPTH_TEST);
+
+	std::vector<GLfloat> vertices;
+	std::vector<GLuint> indices;
+	generateDonut(vertices, indices, 1.0f, 0.4f, 48, 24);
+
 	Shader shaderProgram("default.vert", "default.frag");
 
 	Texture texture("texturetest.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
@@ -102,27 +114,41 @@ int main()
 	VAO VAO1;
 	VAO1.Bind();
 
+	VBO VBO1(vertices.data(), vertices.size() * sizeof(GLfloat));
+	EBO EBO1(indices.data(), indices.size() * sizeof(GLuint));
 
-	VBO VBO1(vertices, sizeof(vertices));
-	EBO EBO1(indices, sizeof(indices));
-
-	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);                      
-	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));    
-	VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));   
+	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
+	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
 	VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
 
-	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-	Transform cubeTransform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+	Camera camera(glm::vec3(0.0f, 2.0f, 5.0f));
+	Transform donutTransform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
 
-	Material cubeMaterial = Material::Silver();  
-	Light mainLight(
+	Material donutMaterial = Material::Gold();
+
+	Light light1(
 		glm::vec3(2.0f, 2.0f, 2.0f),   
-		glm::vec3(0.2f, 0.2f, 0.2f),   
-		glm::vec3(0.8f, 0.8f, 0.8f),   
-		glm::vec3(1.0f, 1.0f, 1.0f)    
+		glm::vec3(0.1f, 0.1f, 0.1f),   
+		glm::vec3(1.0f, 1.0f, 1.0f),  
+		glm::vec3(1.0f, 1.0f, 1.0f)     
+	);
+
+	Light light2(
+		glm::vec3(-2.0f, 1.0f, 2.0f), 
+		glm::vec3(0.0f, 0.0f, 0.0f),   
+		glm::vec3(1.0f, 0.0f, 0.0f),  
+		glm::vec3(1.0f, 0.0f, 0.0f)   
+	);
+
+	Light light3(
+		glm::vec3(0.0f, -1.0f, 2.0f), 
+		glm::vec3(0.0f, 0.0f, 0.0f),  
+		glm::vec3(0.0f, 0.0f, 1.0f),  
+		glm::vec3(0.0f, 0.0f, 1.0f)   
 	);
 
 	float deltaTime = 0.0f;
@@ -139,27 +165,30 @@ int main()
 
 		shaderProgram.Activate();
 
-		cubeTransform.rotation.y += 50.0f * deltaTime;
-		cubeTransform.rotation.x += 30.0f * deltaTime;
+		camera.UpdateAutoMovement(deltaTime, 5.0f);
 
-		glm::mat4 model = cubeTransform.GetModelMatrix();
+		donutTransform.rotation.y += 30.0f * deltaTime;
+		donutTransform.rotation.x += 15.0f * deltaTime;
+
+		glm::mat4 model = donutTransform.GetModelMatrix();
 		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 projection = camera.GetProjectionMatrix(800.0f / 800.0f); 
+		glm::mat4 projection = camera.GetProjectionMatrix(800.0f / 800.0f);
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-		cubeMaterial.SendToShader(shaderProgram);
-		mainLight.SendToShader(shaderProgram);
+		donutMaterial.SendToShader(shaderProgram);
+		light1.SendToShader(shaderProgram, 0);
+		light2.SendToShader(shaderProgram, 1);
+		light3.SendToShader(shaderProgram, 2);
 
 		glUniform3f(glGetUniformLocation(shaderProgram.ID, "viewPos"),
 			camera.position.x, camera.position.y, camera.position.z);
 
 		texture.Bind();
 		VAO1.Bind();
-
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -171,7 +200,6 @@ int main()
 	texture.Delete();
 	shaderProgram.Delete();
 	glfwDestroyWindow(window);
-
 	glfwTerminate();
 	return 0;
 }

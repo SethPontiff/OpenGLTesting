@@ -8,7 +8,8 @@ Camera::Camera(glm::vec3 pos, glm::vec3 up, float yaw, float pitch)
     front(glm::vec3(0.0f, 0.0f, -1.0f)),
     movementSpeed(2.5f),
     mouseSensitivity(0.1f),
-    fov(45.0f)
+    fov(45.0f),
+    autoMoveTime(0.0f)
 {
     UpdateCameraVectors();
 }
@@ -67,6 +68,20 @@ void Camera::ProcessMouseScroll(float yOffset)
         fov = 1.0f;
     if (fov > 45.0f)
         fov = 45.0f;
+}
+
+void Camera::UpdateAutoMovement(float deltaTime, float radius)
+{
+    autoMoveTime += deltaTime;
+
+    position.x = radius * cos(autoMoveTime * 0.5f);
+    position.z = radius * sin(autoMoveTime * 0.5f);
+    position.y = 2.0f + sin(autoMoveTime) * 0.5f; 
+
+    front = glm::normalize(glm::vec3(0.0f) - position);
+
+    right = glm::normalize(glm::cross(front, worldUp));
+    up = glm::normalize(glm::cross(right, front));
 }
 
 void Camera::UpdateCameraVectors()

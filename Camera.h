@@ -13,11 +13,9 @@ public:
     glm::vec3 right;
     glm::vec3 worldUp;
 
-    // Euler angles
     float yaw;
     float pitch;
 
-    // Camera options
     float movementSpeed;
     float mouseSensitivity;
     float fov;
@@ -27,20 +25,20 @@ public:
         float yaw = -90.0f,
         float pitch = 0.0f);
 
-    // Get matrices
     glm::mat4 GetViewMatrix() const;
     glm::mat4 GetProjectionMatrix(float aspectRatio, float nearPlane = 0.1f, float farPlane = 100.0f) const;
 
-    // Movement
     void ProcessKeyboard(int direction, float deltaTime);
     void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
     void ProcessMouseScroll(float yOffset);
 
+    void UpdateAutoMovement(float deltaTime, float radius = 5.0f);
+
 private:
     void UpdateCameraVectors();
+    float autoMoveTime = 0.0f;
 };
 
-// Movement directions
 enum CameraMovement {
     FORWARD,
     BACKWARD,

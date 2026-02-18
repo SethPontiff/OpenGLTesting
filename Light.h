@@ -15,7 +15,7 @@ public:
     Light();
     Light(glm::vec3 pos, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec);
 
-    void SendToShader(Shader& shader);
+    void SendToShader(Shader& shader, int index);
 };
 
 #endif
